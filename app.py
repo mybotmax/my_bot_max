@@ -23,7 +23,7 @@ last_update_id = 0
 # ФУНКЦИЯ ОТПРАВКИ
 # ==========================================
 def send_message(chat_id, text):
-    url = f"{BASE_URL}/messages/sendText"
+    url = f{BASE_URL}/messages/sendText"  
     headers = {
         "Authorization": BOT_TOKEN,
         "Content-Type": "application/json; charset=utf-8"
