@@ -14,7 +14,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 # ==========================================
 # НАСТРОЙКИ БОТА
 # ==========================================
-BOT_TOKEN = "f9LHodD0cOJElwJ-QgWwz2vzlo55Lloe6efbhBRlN6wb7R02rGbP0EfAmNWqmVq6q-ljq2_Et3O4NSQG6UZX",  # Вставьте свой токен!
+BOT_TOKEN = "f9LHodD0cOJElwJ-QgWwz2vzlo55Lloe6efbhBRlN6wb7R02rGbP0EfAmNWqmVq6q-ljq2_Et3O4NSQG6UZX",
 
 BASE_URL = "https://platform-api2.max.ru"
 last_update_id = 0
