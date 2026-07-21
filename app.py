@@ -4,7 +4,7 @@ import os
 from flask import Flask, request, jsonify
 
 # ВСТАВЬТЕ СВОЙ ТОКЕН СЮДА
-BOT_TOKEN = "ВАШ_ТОКЕН_СЮДА"
+BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
 BASE_URL = "https://platform-api2.max.ru"
 
 app = Flask(__name__)
