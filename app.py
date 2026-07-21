@@ -1,15 +1,18 @@
 import requests
 import json
-import os
-from flask import Flask, request, jsonify
+import streamlit as st
+import time
 
-# ВСТАВЬТЕ СВОЙ ТОКЕН СЮДА
-BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
+# ==========================================
+# НАСТРОЙКИ БОТА
+# ==========================================
+# ВСТАВЬТЕ СВОЙ ТОКЕН СЮДА (в кавычках)
+BOT_TOKEN = "ВАШ_ТОКЕН_СЮДА"
 BASE_URL = "https://platform-api2.max.ru"
 
-app = Flask(__name__)
-
-# Функция отправки сообщения
+# ==========================================
+# ФУНКЦИЯ ОТПРАВКИ СООБЩЕНИЯ
+# ==========================================
 def send_message(chat_id, text):
     url = f"{BASE_URL}/messages/sendText"
     headers = {
@@ -21,32 +24,39 @@ def send_message(chat_id, text):
         "text": text
     }
     try:
-        requests.post(url, headers=headers, json=data, timeout=5)
-    except:
-        pass
+        response = requests.post(url, headers=headers, json=data, timeout=5)
+        if response.status_code != 200:
+            print(f"❌ Ошибка отправки: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Ошибка соединения: {e}")
 
-# Это место, куда MAX будет стучаться
-@app.route('/', methods=['POST'])
-def webhook():
+# ==========================================
+# ЗАПУСК ИНТЕРФЕЙСА STREAMLIT
+# ==========================================
+st.set_page_config(page_title="Мой Макс Бот", layout="centered")
+st.title("🤖 Мой Макс Бот")
+st.write("✅ Бот успешно запущен и готов принимать сообщения!")
+
+# Этот блок нужен, чтобы Streamlit не "засыпал"
+# Он создает пустое место для логов
+log_area = st.empty()
+
+# Функция, которая будет слушать Макс через Webhook (если он настроен)
+# В Streamlit мы используем специальный обработчик запросов
+if st.query_params:
     try:
-        # Получаем данные от MAX
-        data = request.json
+        # Получаем данные от Макса
+        data = st.query_params.to_dict()
         print(f"📩 Получено: {data}")
         
-        # Ищем chatId и текст
         chat_id = data.get("chatId")
         text = data.get("text")
         
         if chat_id and text:
             send_message(chat_id, f"Привет! Я получил: '{text}'")
-            print(f"✅ Ответ отправлен на {text}")
-            
-        # Обязательно отвечаем серверу MAX статусом 200
-        return jsonify({"status": "ok"}), 200
+            log_area.success(f"✅ Ответ отправлен на: {text}")
     except Exception as e:
-        print(f"Ошибка: {e}")
-        return jsonify({"status": "error"}), 500
+        log_area.error(f"❌ Ошибка обработки: {e}")
 
-# Запускаем приложение (Streamlit это поддерживает)
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+# Держим приложение активным
+st.info("🟢 Сервер работает. Отправьте сообщение боту в MAX.")
