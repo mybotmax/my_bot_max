@@ -8,9 +8,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ==========================================
 # НАСТРОЙКИ БОТА
 # ==========================================
-BOT_TOKEN = "f9LHodD0cOKk3tV_eJmfdRsWCwBn52mz3F4SS7rcSqGXKYomm_vC0b2hdAlGF3kS1cj4Mwn2996sX-unsoif"
-# ВАЖНО: Адрес для отправки сообщений (эндпоинт) изменился
-SEND_URL = "https://platform-api2.max.ru/messages/sendText"
+BOT_TOKEN = "f9LHodD0cOKLhxOlQDEgM5JmnKyKGs0915KLSUKglWdLvWbX3X2Nab4KyEqSPA5YOrIz6SSy21_xEEs9JicY"
+# ЗАМЕНИЛИ api2 НА api
+SEND_URL = "https://api.max.ru/messages/sendText"
 
 # ==========================================
 # ФУНКЦИЯ ОТПРАВКИ
@@ -19,7 +19,7 @@ def send_message(chat_id, text):
     headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
     data = {"chatId": chat_id, "text": text}
     try:
-        # Отправляем запрос прямо на SEND_URL
+        # Отправляем запрос на НОВЫЙ URL
         response = requests.post(SEND_URL, headers=headers, json=data, timeout=5, verify=False)
         if response.status_code != 200:
             st.error(f"Ошибка отправки. Код: {response.status_code}")
