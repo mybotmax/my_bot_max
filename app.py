@@ -16,7 +16,7 @@ if chat_id:
     st.success(f"✅ Получено: {text}")
     
     # ⚠️ ВОТ ЗДЕСЬ ВАЖНОЕ ИЗМЕНЕНИЕ: ДОБАВИЛИ Bearer
-    headers = {"Authorization": f"Bearer {BOT_TOKEN}", "Content-Type": "application/json"}
+    headers = {"Authorization": {BOT_TOKEN}", "Content-Type": "application/json"}
     
     data = {"chatId": chat_id, "text": f"Привет! Я получил: '{text}'"}
     
