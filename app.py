@@ -1,38 +1,37 @@
 import requests
 import streamlit as st
+import json
 
-BOT_TOKEN = "ВАШ_ТОКЕН_СЮДА"
-# Для теста используем этот адрес. Если он неверный - мы увидим это в ответе сервера
+BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
 TEST_URL = "https://api.max.ru/messages/sendText"
 
-st.title("🔍 Диагностика Макса")
+st.title("🔍 Диагностика Макса (исправленная)")
 
 params = st.query_params
 chat_id = params.get("chatId")
 text = params.get("text")
 
 if chat_id:
-    st.write(f"✅ Получено сообщение: {text}")
+    st.success(f"✅ Получено сообщение: {text}")
     
     headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
     data = {"chatId": chat_id, "text": f"Ответ: '{text}'"}
     
     try:
-        # Стучимся в Макс
-        response = requests.post(TEST_URL, headers=headers, json=data, timeout=5, verify=False)
+        # ВАЖНО: ensure_ascii=False спасает от ошибки 'latin-1'
+        json_data = json.dumps(data, ensure_ascii=False).encode('utf-8')
         
-        # ВАЖНО: Выводим полный ответ сервера!
+        response = requests.post(TEST_URL, headers=headers, data=json_data, timeout=5, verify=False)
+        
         st.error(f"Код ответа: {response.status_code}")
-        
-        # Это и есть та самая строчка с кодом, которую просил тот ИИ!
         st.code(response.text)
         
         if response.status_code == 200:
-            st.success("Этот адрес работает!")
+            st.success("🎉 Ура! Адрес работает, а кириллица прошла!")
         else:
-            st.warning("Смотрим на текст ошибки выше. Он подскажет правильный адрес.")
+            st.warning("Смотрим на текст ошибки выше.")
 
     except Exception as e:
         st.error(f"Ошибка подключения: {e}")
 else:
-    st.info("Допишите в конец ссылки браузера: `/?chatId=123&text=Привет` и нажмите Enter, чтобы запустить диагностику.")
+    st.info("Допишите в конец ссылки: `/?chatId=123&text=Привет` и нажмите Enter.")
