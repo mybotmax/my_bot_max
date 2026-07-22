@@ -3,7 +3,7 @@ import streamlit as st
 import json
 
 BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
-TEST_URL = "https://api.max.ru/messages/sendText"
+TEST_URL = "https://api.max.ru/sendText"
 
 st.title("🔍 Диагностика Макса (исправленная)")
 
