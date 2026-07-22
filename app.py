@@ -1,16 +1,10 @@
+# bot.py - ОБЫЧНЫЙ PYTHON (НЕ STREAMLIT)
 import requests
-import streamlit as st
 import json
 import time
 
-# ВСТАВЬТЕ ТОКЕН
 BOT_TOKEN = "f9LHodD0cOLNe5TAyASUtuyV1Dl4KEGrYkDpQyaZmTfbiZP3C7PmL46-VL8-Z7Gr808kj6ajFQWpTEoTvLzD"
 BASE_URL = "https://platform-api2.max.ru"
-
-st.set_page_config(page_title="Мой Макс Бот", layout="centered")
-st.title("🤖 Мой Макс Бот")
-status = st.empty()
-
 last_update_id = 0
 
 def send_message(chat_id, text):
@@ -41,8 +35,7 @@ def get_updates():
         pass
     return []
 
-# Запускаем бесконечный цикл (Long Polling)
-status.info("🟢 Бот запущен в режиме Long Polling. Жду сообщений...")
+print("🟢 Бот запущен в режиме Long Polling. Жду сообщений...")
 
 while True:
     updates = get_updates()
@@ -51,9 +44,9 @@ while True:
             chat_id = update.get("chatId")
             text = update.get("text")
             if chat_id and text:
-                status.success(f"✅ Получено: {text}")
+                print(f"✅ Получено: {text}")
                 if send_message(chat_id, f"Привет! Я получил: '{text}'"):
-                    status.success("✅ Ответ отправлен!")
+                    print("✅ Ответ отправлен!")
                 else:
-                    status.error("❌ Ошибка отправки ответа.")
-    time.sleep(2) # Пауза 2 секунды, чтобы не спамить сервер
+                    print("❌ Ошибка отправки ответа.")
+    time.sleep(2)
