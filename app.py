@@ -1,28 +1,38 @@
 import requests
 import streamlit as st
 
-BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
-# Поменяли URL: api2 заменили на api
-SEND_URL = "https://api.max.ru/messages/sendText"
+BOT_TOKEN = "ВАШ_ТОКЕН_СЮДА"
+# Для теста используем этот адрес. Если он неверный - мы увидим это в ответе сервера
+TEST_URL = "https://api.max.ru/messages/sendText"
 
-def send_message(chat_id, text):
-    headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
-    data = {"chatId": chat_id, "text": text}
-    try:
-        response = requests.post(SEND_URL, headers=headers, json=data, timeout=5, verify=False)
-        if response.status_code != 200:
-            st.error(f"Ошибка отправки. Код: {response.status_code}")
-    except Exception as e:
-        st.error(f"Ошибка сети: {e}")
-
-st.title("🤖 Мой Макс Бот")
-st.info("Сервер запущен. Ожидаю сообщение...")
+st.title("🔍 Диагностика Макса")
 
 params = st.query_params
-if "chatId" in params and "text" in params:
-    chat_id = params["chatId"]
-    text = params["text"]
-    st.success(f"✅ Получено: {text}")
-    send_message(chat_id, f"Привет! Я получил: '{text}'")
+chat_id = params.get("chatId")
+text = params.get("text")
+
+if chat_id:
+    st.write(f"✅ Получено сообщение: {text}")
+    
+    headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
+    data = {"chatId": chat_id, "text": f"Ответ: '{text}'"}
+    
+    try:
+        # Стучимся в Макс
+        response = requests.post(TEST_URL, headers=headers, json=data, timeout=5, verify=False)
+        
+        # ВАЖНО: Выводим полный ответ сервера!
+        st.error(f"Код ответа: {response.status_code}")
+        
+        # Это и есть та самая строчка с кодом, которую просил тот ИИ!
+        st.code(response.text)
+        
+        if response.status_code == 200:
+            st.success("Этот адрес работает!")
+        else:
+            st.warning("Смотрим на текст ошибки выше. Он подскажет правильный адрес.")
+
+    except Exception as e:
+        st.error(f"Ошибка подключения: {e}")
 else:
-    st.write("Ожидание первого сообщения...")
+    st.info("Допишите в конец ссылки браузера: `/?chatId=123&text=Привет` и нажмите Enter, чтобы запустить диагностику.")
