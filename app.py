@@ -1,46 +1,59 @@
 import requests
 import streamlit as st
 import json
+import time
 
-# ВСТАВЬТЕ СВОЙ ТОКЕН
+# ВСТАВЬТЕ ТОКЕН
 BOT_TOKEN = "f9LHodD0cOLNe5TAyASUtuyV1Dl4KEGrYkDpQyaZmTfbiZP3C7PmL46-VL8-Z7Gr808kj6ajFQWpTEoTvLzD"
+BASE_URL = "https://platform-api2.max.ru"
 
-# Эндпоинт из вашей документации
-SEND_URL = "https://platform-api2.max.ru/messages"
-
+st.set_page_config(page_title="Мой Макс Бот", layout="centered")
 st.title("🤖 Мой Макс Бот")
-st.info("🟢 Сервер запущен. Жду сообщений...")
+status = st.empty()
 
-params = st.query_params
-chat_id = params.get("chatId")
-text = params.get("text")
+last_update_id = 0
 
-if chat_id:
-    st.success(f"✅ Получено: {text}")
-    
-    # ⚠️ Убрали Bearer. Теперь только токен.
-    headers = {
-        "Authorization": BOT_TOKEN,
-        "Content-Type": "application/json"
-    }
-    
-    data = {
-        "chatId": chat_id,
-        "text": f"Привет! Я получил: '{text}'"
-    }
-    
+def send_message(chat_id, text):
+    url = f"{BASE_URL}/messages"
+    headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
+    data = {"chatId": chat_id, "text": text}
     try:
-        # Обрабатываем кириллицу
         json_data = json.dumps(data, ensure_ascii=False).encode('utf-8')
-        response = requests.post(SEND_URL, headers=headers, data=json_data, timeout=5, verify=False)
-        
+        response = requests.post(url, headers=headers, data=json_data, timeout=5, verify=False)
+        return response.status_code == 200
+    except:
+        return False
+
+def get_updates():
+    global last_update_id
+    url = f"{BASE_URL}/updates"
+    headers = {"Authorization": BOT_TOKEN}
+    params = {"marker": last_update_id}
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=5, verify=False)
         if response.status_code == 200:
-            st.success("✅ Ответ успешно отправлен в MAX!")
-        else:
-            st.error(f"⚠️ Ошибка отправки. Код: {response.status_code}")
-            st.code(response.text)
-            
-    except Exception as e:
-        st.error(f"Ошибка подключения: {e}")
-else:
-    st.write("Ожидание первого сообщения...")
+            data = response.json()
+            updates = data.get("updates", [])
+            if updates:
+                last_update_id = updates[-1].get("marker", last_update_id)
+            return updates
+    except:
+        pass
+    return []
+
+# Запускаем бесконечный цикл (Long Polling)
+status.info("🟢 Бот запущен в режиме Long Polling. Жду сообщений...")
+
+while True:
+    updates = get_updates()
+    if updates:
+        for update in updates:
+            chat_id = update.get("chatId")
+            text = update.get("text")
+            if chat_id and text:
+                status.success(f"✅ Получено: {text}")
+                if send_message(chat_id, f"Привет! Я получил: '{text}'"):
+                    status.success("✅ Ответ отправлен!")
+                else:
+                    status.error("❌ Ошибка отправки ответа.")
+    time.sleep(2) # Пауза 2 секунды, чтобы не спамить сервер
