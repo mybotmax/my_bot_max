@@ -2,8 +2,8 @@ import requests
 import streamlit as st
 
 BOT_TOKEN = "f9LHodD0cOJDvMkvHcYvQ_WXz46iuVcrUsoYaH7QLRQ799cTzdNwqAxxCj7qgX8D4a42anK0_SA86LkhmoAC"
-# Поменяли URL: убрали слово messages
-SEND_URL = "https://platform-api2.max.ru/sendText"
+# Поменяли URL: api2 заменили на api
+SEND_URL = "https://api.max.ru/messages/sendText"
 
 def send_message(chat_id, text):
     headers = {"Authorization": BOT_TOKEN, "Content-Type": "application/json"}
